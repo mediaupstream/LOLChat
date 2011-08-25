@@ -1,0 +1,79 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>LOLChat</title>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+	
+	<style type="text/css" media="screen">
+html,body{padding:0px;margin:0;position:relative;height:100%;overflow:hidden;}
+h3{text-align:center;z-index:900;font-size:20px;font-family:"Comic Sans MS",serif;color:#fff;text-shadow:1px 1px 1px #333;background-color:#CB365D;position:fixed;top:0;left:0;right:0;height:30px;margin:0;}
+#messages,#you{font-size:24px;border:0px solid #fff;color:#CA355B;padding:10px;}
+#messages{position:absolute;;bottom:50px;top:35px;left:0;right:0;overflow:scroll;}
+#messages ul{list-style-type:none;margin:0;padding:0;}
+#messages li{list-style-type:none;padding:5px;margin:0;font-size:20px;font-family:Helvetica,sans-serif;color:#777;}
+#messages li img{width:30px;height:30px;padding:0;margin-right:5px;vertical-align:middle;-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;}
+#messages li b{color:#53C9FF;}
+#you{position:absolute;border:2px solid #CA355B;color:#046380;bottom:5px;left:70px;right:15px;height:50px;z-index:900;}
+#say{position:absolute;bottom:5px;left:5px;width:60px;height:50px;z-index:900;line-height:50px;font-size:16px;font-family:"Comic Sans MS",serif;background-color:#CB365D;color:#fff;text-align:center;font-style:italic;text-shadow:1px 1px 0px #333;}
+
+
+	</style>
+	
+	<script type="text/javascript" charset="utf-8">
+	
+var LOL={};LOL.dictionary={"this":"thiz",what:["wut","whut"],you:["yu","yous","yoo","u"],cture:"kshur",unless:"unles",the:"teh",more:"moar",my:["muh","mah"],are:["r","is","ar"],eese:"eez",ph:"f",as:"az",seriously:"srsly",er:"r",sion:"shun",just:"jus",ose:"oze",eady:"eddy",ome:"um",of:["of","ov","of"],uestion:"wesjun",want:"waants",ead:"edd",ucke:["ukki","ukke"],sion:"shun",eak:"ekk",age:"uj",like:["likes","liek"],love:["loves","lub","lubs","luv"],dog:"slowpaw", is:["ar teh","ar"],nd:"n",who:"hoo",ese:"eez",outh:"owf",scio:"shu",esque:"esk",ture:"chur",too:["to","2"],tious:"shus",sure:"shur",tty:"tteh",were:"was",ok:["k","kay"],ym:"im",thy:"fee",ly:"li",que:"kwe",oth:"udd",ease:"eez",ing:["in","ins","ng","ing"],have:["has","hav","haz a"],your:["yur","ur","yore","yoar"],ove:["oov","ove","uuv","uv","oove"],"for":["for","4","fr","fur","for","foar"],thank:["fank","tank","thx","thnx",],good:["gud","goed","guud","gude","gewd"],really:["rly","rily","rilly","rilley"],"oh really":"orly",world:["wurrld","whirld","wurld","wrld"],"i'm":"im",ight:"ite",tion:"shun","you're":["yore","yr"],"i can have":"i can has","hello|hey|howdy":"oh hai","god|allah|buddah|diety":"ceiling cat","cat|kitty|kitten":"kitteh", "\\<3":"♥", "\\:\\)":"☺", "\\:\\(":"☹"};LOL.dictLen=LOL.dictionary.length;LOL.translate=function(d){var f=d.toLowerCase();var e=LOL.dictionary;for(key in e){var c=new RegExp(key,"g");var b=e[key];if(typeof b=="object"){var a=Math.floor(Math.random()*b.length);b=b[a];}f=f.replace(c,b);}return f.toUpperCase();};
+	
+	$(function(){
+		var yourName = prompt("What is your name?");
+		yourName = (yourName) ? yourName : 'anonymous';
+		var yourIcon = 'http://placekitten.com/' + Math.floor(30 + (Math.random() * 10)) +'/'+ Math.floor(30 + (Math.random() * 10));
+		var you = $('#you');
+		var chat = $('#messages ul');
+		
+		var messages = function(msg){
+			if(typeof msg == 'undefined'){ msg = 'getMessages.json'; }
+			$.getJSON('/'+msg, function(data) {
+			  var items = [];
+			  $.each(data, function(key, val) {
+					items.push('<li>' + val + '</li>');
+			  });
+			  chat.html(items.join(''));
+				if(msg != 'getMessages.json') {
+					chat.parent().animate({ scrollTop: chat.height() }, 'slow');
+				}
+			});
+		};
+		
+		you.trigger('focus');
+		
+		messages();
+		setTimeout(function(){
+			chat.parent().animate({ scrollTop: chat.height() }, 'slow');
+		}, 1000);
+		
+		setInterval(function(){
+			messages();
+		}, 2000);
+		
+		you.keypress(function(e) {
+			if(e.keyCode == 13) {
+				var message = you.val();
+				messages('<img src="'+yourIcon+'"><b>'+yourName+'</b>: '+message);
+				$(this).val('');
+			}
+		});
+		
+		you.keyup(function(e){
+			you.val( LOL.translate(you.val()) );
+		});
+		
+	});
+	</script>
+</head>
+<body>
+	<h3>I Can Haz LOLChat</h3>
+	<div id="messages"><ul></ul></div>
+	<input name="you" value="" id="you">
+	<div id="say">LOLZ</div>
+</body>
+</html>
